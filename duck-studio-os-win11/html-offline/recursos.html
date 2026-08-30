@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DUCK Studio — Recursos oficiais</title>
+  <link rel="stylesheet" href="assets/duck.css">
+  <script defer src="assets/core.js"></script>
+  <script defer src="assets/knowledge.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">DK</span><span><strong>DUCK Studio</strong><small data-project-title>Sessão offline</small></span></div>
+    <nav class="main-nav" aria-label="Módulos principais"><a href="index.html">Estação</a><a href="mixer.html">Mixer</a><a href="instrumentos.html">Instrumentos</a><a href="agente.html">Agente</a><a href="recursos.html">Recursos</a><a href="memoria.html">Memória</a></nav>
+    <span class="offline-badge">CATÁLOGO LOCAL</span>
+  </header>
+  <main id="conteudo">
+    <header class="page-head"><div><p class="eyebrow">Metadados embarcados · links oficiais</p><h1>Recursos</h1><p class="lede">Catálogo pesquisável sem rede. Cada link externo abre somente após seu gesto; “disponível” não significa instalado nem testado.</p></div><div class="status-line"><span id="resource-count">0</span>&nbsp;itens visíveis</div></header>
+    <section aria-label="Filtros do catálogo">
+      <div class="filterbar"><label class="sr-only" for="resource-search">Buscar</label><input id="resource-search" type="search" placeholder="Buscar nome, categoria, licença"><label class="sr-only" for="resource-category">Categoria</label><select id="resource-category"><option value="">Todas as categorias</option></select></div>
+      <div id="resource-list" class="resource-list"></div>
+    </section>
+  </main>
+  <footer>Fontes cadastradas em CATALOGO-RECURSOS.json. Licenças devem ser verificadas antes de uso, download ou redistribuição.</footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      DuckCore.initPage('recursos');
+      var search = document.getElementById('resource-search');
+      var category = document.getElementById('resource-category');
+      var list = document.getElementById('resource-list');
+      var categories = [];
+      DuckKnowledge.resources.forEach(function (resource) { resource.categories.forEach(function (item) { if (categories.indexOf(item) < 0) categories.push(item); }); });
+      categories.sort().forEach(function (item) { var option = document.createElement('option'); option.value = item; option.textContent = item; category.appendChild(option); });
+      function render() {
+        var query = search.value.trim().toLowerCase();
+        var selected = category.value;
+        var filtered = DuckKnowledge.resources.filter(function (resource) {
+          var haystack = [resource.name, resource.kind, resource.license].concat(resource.categories).join(' ').toLowerCase();
+          return (!query || haystack.indexOf(query) >= 0) && (!selected || resource.categories.indexOf(selected) >= 0);
+        });
+        list.replaceChildren();
+        filtered.forEach(function (resource) {
+          var card = document.createElement('article'); card.className = 'resource-card';
+          var title = document.createElement('h3'); title.textContent = resource.name; card.appendChild(title);
+          var tags = document.createElement('div'); tags.className = 'tags';
+          resource.categories.forEach(function (value) { var tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = value; tags.appendChild(tag); }); card.appendChild(tags);
+          var dl = document.createElement('dl'); dl.className = 'resource-meta';
+          [['Tipo', resource.kind], ['Conta', resource.account], ['Licença', resource.license], ['Estado', resource.state]].forEach(function (row) { var dt = document.createElement('dt'); dt.textContent = row[0]; var dd = document.createElement('dd'); dd.textContent = row[1]; dl.append(dt, dd); }); card.appendChild(dl);
+          var link = document.createElement('a'); link.className = 'button'; link.href = resource.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Abrir fonte oficial'; link.setAttribute('aria-label', 'Abrir fonte oficial de ' + resource.name); card.appendChild(link);
+          list.appendChild(card);
+        });
+        document.getElementById('resource-count').textContent = filtered.length;
+      }
+      search.addEventListener('input', render); category.addEventListener('change', render); render();
+    });
+  </script>
+</body>
+</html>

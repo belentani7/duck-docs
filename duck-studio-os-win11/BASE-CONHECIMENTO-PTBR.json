@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "language": "pt-BR",
+  "reviewedAt": "2026-08-13",
+  "engineLabel": "Base local determinística",
+  "entries": [
+    {
+      "id": "gain-staging",
+      "title": "Gain staging antes de plugins",
+      "intents": ["volume baixo", "clip", "vermelho", "ganho", "headroom", "distorção"],
+      "tags": ["mix", "gravação", "volume"],
+      "diagnosis": "O sinal precisa chegar limpo e previsível a cada etapa antes de qualquer efeito.",
+      "steps": [
+        "Desative temporariamente os plugins do canal e deixe o fader perto de 0 dB.",
+        "Ajuste o ganho de entrada para os picos permanecerem abaixo de 0 dBFS, com margem real.",
+        "Equilibre os canais pelo trim e fader, ouvindo o conjunto em volume moderado.",
+        "Reative cada plugin e compense o ganho de saída para comparar em volume equivalente.",
+        "Verifique canal, buses e master; nenhum ponto deve clipar sem intenção artística."
+      ],
+      "listenFor": ["transientes intactos", "ruído aceitável", "comparação bypass sem salto de volume"],
+      "risks": ["volume alto engana a comparação", "normalizar tudo não corrige cadeia ruim"],
+      "undo": "Volte ao snapshot anterior do mixer e reative os plugins um por um."
+    },
+    {
+      "id": "voice-home-recording",
+      "title": "Gravar voz em ambiente doméstico",
+      "intents": ["gravar voz", "vocal", "microfone", "eco", "ruído de quarto"],
+      "tags": ["voz", "gravação", "acústica"],
+      "diagnosis": "Posição, ambiente e ganho resolvem mais problemas do que uma cadeia pesada.",
+      "steps": [
+        "Escolha a área mais silenciosa e afaste o microfone de paredes nuas e computador ruidoso.",
+        "Use absorção atrás e ao redor do intérprete sem fechar um espaço abafado e desconfortável.",
+        "Posicione pop filter e mantenha distância consistente, ajustada ao microfone e à intensidade.",
+        "Faça teste forte e suave; ajuste ganho com margem, sem limiter na entrada.",
+        "Grave 10 segundos de silêncio do quarto e um take curto; escute com fones antes da sessão."
+      ],
+      "listenFor": ["plosivas", "reflexões curtas", "ventilador", "clipping", "variação de distância"],
+      "risks": ["feedback com monitoração aberta", "volume excessivo nos fones"],
+      "undo": "Pare a monitoração, reduza o ganho e retome a partir do teste curto."
+    },
+    {
+      "id": "vocal-chain",
+      "title": "Cadeia vocal inicial",
+      "intents": ["mix vocal", "voz na frente", "de-esser", "compressor vocal", "autotune"],
+      "tags": ["voz", "mix", "efeitos"],
+      "diagnosis": "A cadeia deve estabilizar a voz sem apagar articulação, emoção ou identidade.",
+      "steps": [
+        "Edite ruídos e respirações problemáticas manualmente antes de comprimir demais.",
+        "Use filtro passa-altas somente até remover energia inútil sem afinar a voz.",
+        "Aplique EQ corretivo em ressonâncias confirmadas, com cortes estreitos e moderados.",
+        "Comprima em duas etapas leves quando uma etapa única ficar audível.",
+        "Controle sibilância ouvindo palavras completas, não somente o medidor.",
+        "Envie delay e reverb por buses para manter controle e profundidade."
+      ],
+      "listenFor": ["consoantes naturais", "corpo preservado", "nível estável", "ambiência separada"],
+      "risks": ["correção de pitch rígida sem intenção", "de-esser cria voz opaca"],
+      "undo": "Bypass por etapa e recupere o último ponto em que a voz continuava natural."
+    },
+    {
+      "id": "guitar-di",
+      "title": "Gravar guitarra DI e preparar reamp",
+      "intents": ["guitarra", "di", "reamp", "amp sim", "chiado", "latência guitarra"],
+      "tags": ["guitarra", "gravação", "amp"],
+      "diagnosis": "Uma DI limpa e sem clipping preserva liberdade para escolher amp e efeitos depois.",
+      "steps": [
+        "Conecte a guitarra a uma entrada Hi-Z ou DI apropriada.",
+        "Teste palhetada mais forte e ajuste ganho com margem.",
+        "Grave a DI limpa; monitore por amp sim em trilha ou cadeia separada.",
+        "Use buffer baixo apenas se o sistema permanecer estável; aumente no mix.",
+        "Cheque cabos, alimentação, aterramento e posição antes de usar gate forte."
+      ],
+      "listenFor": ["cliques digitais", "hum", "palhetada preservada", "ruído que muda com posição"],
+      "risks": ["entrada line em vez de Hi-Z", "imprimir distorção irreversível"],
+      "undo": "Mantenha a DI original e troque apenas a cadeia de monitoração/reamp."
+    },
+    {
+      "id": "drum-programming",
+      "title": "Programar drums com dinâmica",
+      "intents": ["beat", "bateria", "drums", "groove", "hi hat", "kick", "snare"],
+      "tags": ["beat", "sequenciador", "ritmo"],
+      "diagnosis": "Groove nasce da relação entre acentos, silêncio, microtiming e duração, não de preencher todos os passos.",
+      "steps": [
+        "Defina kick e snare essenciais em um compasso antes de adicionar hats.",
+        "Varie velocity de forma musical, preservando acentos principais.",
+        "Aplique swing com moderação e compare com o padrão reto.",
+        "Use ghost notes e fills apenas para conduzir transições.",
+        "Alterne pequenas variações A/B a cada quatro ou oito compassos."
+      ],
+      "listenFor": ["pulso claro", "espaço para baixo", "repetição cansativa", "acento coerente"],
+      "risks": ["humanização aleatória destrói intenção", "samples sobrepostos clipam"],
+      "undo": "Volte ao pattern essencial e reintroduza uma variação por vez."
+    },
+    {
+      "id": "bass-808",
+      "title": "808 e baixo legíveis",
+      "intents": ["808", "baixo", "sub", "grave", "kick briga"],
+      "tags": ["baixo", "arranjo", "mix"],
+      "diagnosis": "Kick e baixo precisam dividir ritmo, frequência e duração de forma intencional.",
+      "steps": [
+        "Afine o 808 na tonalidade e confirme notas em oitavas adequadas.",
+        "Ajuste envelope e duração para cada nota terminar onde o groove pede.",
+        "Escolha se kick e 808 se complementam por tempo, afinação ou espaço espectral.",
+        "Teste em mono e em volume baixo.",
+        "Use saturação leve somente se precisar de harmônicos audíveis em caixas pequenas."
+      ],
+      "listenFor": ["mudança real de nota", "grave estável em mono", "kick ainda identificável"],
+      "risks": ["sub abaixo da reprodução do sistema", "limiter escondendo conflito"],
+      "undo": "Retire saturação e sidechain, encurte notas e recupere o desenho rítmico."
+    },
+    {
+      "id": "arrangement",
+      "title": "Estruturar um instrumental",
+      "intents": ["instrumental", "arranjo", "música parada", "intro", "refrão", "verso"],
+      "tags": ["composição", "arranjo", "beat"],
+      "diagnosis": "A estrutura precisa administrar expectativa por densidade, registro, contraste e repetição reconhecível.",
+      "steps": [
+        "Defina o motivo central e uma seção de maior energia.",
+        "Monte um mapa simples de seções com duração em compassos.",
+        "Retire elementos para criar introdução e verso em vez de compor tudo de novo.",
+        "Use transições com antecipação, pausa, fill ou automação curta.",
+        "Compare a curva de energia sem olhar a tela."
+      ],
+      "listenFor": ["entrada reconhecível da seção", "contraste", "motivo memorável", "espaço vocal"],
+      "risks": ["acumular camadas sem função", "copiar estrutura como fórmula rígida"],
+      "undo": "Volte ao loop central e teste uma única decisão de contraste."
+    },
+    {
+      "id": "eq-compression",
+      "title": "Decidir entre EQ e compressão",
+      "intents": ["eq", "compressão", "embolado", "ressonância", "dinâmica"],
+      "tags": ["mix", "eq", "compressão"],
+      "diagnosis": "EQ trata balanço espectral; compressão trata variação no tempo. A causa define a ferramenta.",
+      "steps": [
+        "Identifique se o problema é constante ou aparece somente em notas/palavras específicas.",
+        "Se constante, teste ajuste de arranjo, volume ou EQ suave.",
+        "Se dinâmico, teste automação, compressão ou EQ dinâmico.",
+        "Ajuste ataque/release ouvindo transiente e groove, não em solo prolongado.",
+        "Compare bypass com ganho equivalente dentro do mix."
+      ],
+      "listenFor": ["transiente", "sustain", "pumping", "timbre em contexto"],
+      "risks": ["boost por hábito", "compressor usado para compensar fader"],
+      "undo": "Zere o processador e recupere primeiro o balanço de volume."
+    },
+    {
+      "id": "loudness-master",
+      "title": "Loudness e master sem destruir a mix",
+      "intents": ["master", "lufs", "alto", "limiter", "true peak", "streaming"],
+      "tags": ["mastering", "loudness", "export"],
+      "diagnosis": "Loudness é consequência de arranjo, balanço e dinâmica; um número único não serve para todo lançamento.",
+      "steps": [
+        "Exporte uma mix sem clipping e com margem operacional.",
+        "Compare com referência apropriada em volume equivalente.",
+        "Corrija problemas amplos antes do limiter.",
+        "Aumente nível gradualmente, observando redução, transientes e distorção.",
+        "Meça loudness integrado e true peak no arquivo final e escute o render completo."
+      ],
+      "listenFor": ["kick achatado", "sibilância", "grave distorcido", "fadiga", "mudança de imagem"],
+      "risks": ["perseguir LUFS sem destino", "medidor substituindo escuta"],
+      "undo": "Reduza o ganho no limiter e compare novamente em volume equivalente."
+    },
+    {
+      "id": "sample-license",
+      "title": "Usar samples e instrumentais com licença",
+      "intents": ["sample", "loop", "instrumental", "royalty free", "licença", "copyright"],
+      "tags": ["licença", "samples", "lançamento"],
+      "diagnosis": "A licença do plugin não cobre automaticamente samples, presets, beats ou capturas baixadas.",
+      "steps": [
+        "Registre URL, autor, licença e data no momento do download.",
+        "Confirme uso comercial, atribuição e proibição de redistribuição standalone.",
+        "Guarde recibo, certificado ou captura dos termos junto ao projeto.",
+        "Transforme e combine o material conforme a licença exige.",
+        "Antes de distribuir stems ou projeto coletado, revise cada arquivo incluído."
+      ],
+      "listenFor": ["não aplicável: decisão documental"],
+      "risks": ["CC BY-NC em lançamento comercial", "Content ID", "upload não autorizado por terceiro"],
+      "undo": "Substitua o recurso por gravação própria ou fonte com licença comprovada."
+    }
+  ]
+}

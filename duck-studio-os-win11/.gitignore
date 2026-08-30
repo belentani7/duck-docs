@@ -1,0 +1,8 @@
+github-clones/
+app/node_modules/
+app/dist/
+app/src-tauri/target/
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

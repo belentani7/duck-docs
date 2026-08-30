@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DUCK Studio — Agente musical</title>
+  <link rel="stylesheet" href="assets/duck.css">
+  <script defer src="assets/core.js"></script>
+  <script defer src="assets/knowledge.js"></script>
+  <script defer src="assets/agent.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">DK</span><span><strong>DUCK Studio</strong><small data-project-title>Sessão offline</small></span></div>
+    <nav class="main-nav" aria-label="Módulos principais"><a href="index.html">Estação</a><a href="mixer.html">Mixer</a><a href="instrumentos.html">Instrumentos</a><a href="agente.html">Agente</a><a href="recursos.html">Recursos</a><a href="memoria.html">Memória</a></nav>
+    <span class="offline-badge">BASE PT-BR</span>
+  </header>
+  <main id="conteudo">
+    <header class="page-head"><div><p class="eyebrow">Produção musical · sem modo de programação</p><h1>Agente DUCK</h1><p class="lede">Busca determinística primeiro. Ollama local só com opt-in ou clique explícito. Puter online fica descarregado até consentimento e clique.</p></div><div class="engine" id="engine-status">● Base local pronta</div></header>
+
+    <div class="chat-layout">
+      <section class="panel" aria-labelledby="chat-title">
+        <div class="panel-header"><div><p class="eyebrow">Base imutável · revisão 2026-08-13</p><h2 id="chat-title">Conversa musical</h2></div><button id="cancel-agent" type="button">Parar espera</button></div>
+        <div id="chat-log" class="chat-log" role="log" aria-live="polite" aria-label="Histórico desta sessão"></div>
+        <form id="agent-form">
+          <label class="field" style="margin-top:12px"><span>Pergunta ou decisão de produção</span><textarea id="agent-query" required placeholder="Ex.: Como abrir espaço para a voz sem deixar o beat magro?"></textarea></label>
+          <div class="actions"><button class="primary" type="submit">Consultar base local</button><button id="ask-ollama" type="button">Base + Ollama local</button><button id="ask-puter" type="button">Base + Ollama + Puter online</button></div>
+        </form>
+      </section>
+
+      <aside class="grid" aria-label="Configuração do agente">
+        <section class="panel">
+          <p class="eyebrow">Motor local opcional</p><h2>Ollama</h2>
+          <label class="check"><input id="ollama-optin" type="checkbox"><span>Permitir consulta a 127.0.0.1:11434</span></label>
+          <label class="field"><span>Modelo já instalado</span><select id="ollama-model"><option value="granite3.3:2b">Granite 3.3 2B · leve</option><option value="qwen2.5:7b-instruct">Qwen2.5 7B Instruct</option></select></label>
+          <p class="muted">Não inicia serviço, não baixa modelo e limita contexto a 4096. O consentimento vale somente nesta abertura da página.</p>
+        </section>
+        <section class="panel">
+          <p class="eyebrow">Online opcional · desativado</p><h2>Puter.js</h2>
+          <div class="notice">Exige conta Puter. O usuário assume eventuais custos. O script remoto só carrega depois do clique e da confirmação. Parar ou atingir o timeout encerra a espera local, mas o SDK não oferece cancelamento garantido da solicitação remota; qualquer resposta tardia é ignorada e nunca persistida.</div>
+          <label class="check"><input id="puter-consent" type="checkbox"><span>Concordo com conexão, conta e modelo user-pays</span></label>
+          <p class="muted">Pollinations não é usado: a API atual requer chave.</p>
+        </section>
+        <section class="panel">
+          <p class="eyebrow">Prévia exata</p><h2>Contexto mínimo</h2>
+          <label class="check"><input id="include-project" type="checkbox" checked><span>Incluir nome, BPM, tonalidade e etapa</span></label>
+          <label class="check"><input id="include-memory" type="checkbox"><span>Incluir memória persistente</span></label>
+          <label class="field"><span>Payload que será enviado ao motor escolhido</span><textarea id="context-preview" readonly></textarea></label>
+          <p class="muted">Caminhos e árvore de arquivos nunca entram. Memória persistente começa excluída.</p>
+        </section>
+        <section class="panel">
+          <p class="eyebrow">duck.userMemory.v1</p><h2>Preferências persistentes</h2>
+          <label class="field"><span>Somente o que você deseja lembrar</span><textarea id="memory-text" placeholder="Ex.: prefiro explicações curtas e trabalho em 120 BPM."></textarea></label>
+          <div class="actions"><button id="save-memory" type="button">Salvar memória</button><button id="delete-memory" class="danger" type="button">Apagar memória</button></div>
+          <p id="memory-status" class="muted" role="status">Nenhuma alteração automática.</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+  <footer>Conversa mantida apenas na memória da página. Preferências persistem somente após confirmação separada.</footer>
+</body>
+</html>

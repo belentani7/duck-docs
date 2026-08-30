@@ -1,0 +1,9 @@
+id	path	role	copy_allowed	license_status	notes
+duck-production-docx	C:\Users\USER\Documentos\01_PROYECTOS\CONSOLIDADO\DUCK\07-DESCARTES-VERSIONES\TODODRIVE-duck\DUCK_PRODUCAO_MUSICAL_V1.docx	conteudo_producao	false	pending	Ler por conteudo antes de classificar ou reutilizar
+duck-production-text	C:\Users\USER\Documentos\01_PROYECTOS\CONSOLIDADO\DUCK\07-DESCARTES-VERSIONES\qwen-adjuntos-duck\406_Produção_Musical_DUCK_web d.txt	conteudo_producao	false	pending	Fonte local extensa; preservar original
+duck-musical-tools	C:\Users\USER\Documentos\01_PROYECTOS\CONSOLIDADO\DUCK\07-DESCARTES-VERSIONES\DUCK-2000-improvements\musical-tools.js	codigo_referencia	false	pending	Auditar antes de portar qualquer funcao
+duck-audio-architecture	C:\Users\USER\Documentos\01_PROYECTOS\CONSOLIDADO\DUCK\07-DESCARTES-VERSIONES\DUCK-archivo-versiones-NO-TOCAR\docs\AUDIO.md	licoes_arquitetura	false	pending	Registra falhas historicas; usar como anti-regressao
+duck-instruments-js	C:\Users\USER\Documentos\01_PROYECTOS\CONSOLIDADO\DUCK\01-WEB-SITIOS\DUCK-proyecto-principal\deploy\Duck_HeyDuck\heyduck-deploy\heyduck-rebuild\js\instruments.js	instrumentos_referencia	false	pending	Verificar direitos e dependencias
+duck-living-studio	C:\Users\USER\Documentos\01_PROYECTOS\CONSOLIDADO\DUCK\02-REPOSITORIOS-GIT\heyduck-github-12scripts\instruments\living-studio.html	estudio_referencia	false	pending	Preservar variante integral
+duck-living-studio-variant	C:\Users\USER\Documentos\01_PROYECTOS\CONSOLIDADO\DUCK\01-WEB-SITIOS\duck-portfolio\src\instruments\13-living-studio.html	estudio_referencia	false	pending	Comparar por hash e conteudo antes de unificar
+duck-audited-pack	C:\Users\USER\Desktop\DUCK-EXPERIENCIA-INMERSIVA-PACK-2026-08-13	identidade_e_ferramentas_auditadas	false	mixed	Pack imutavel; consultar README e auditorias

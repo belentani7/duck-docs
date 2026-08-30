@@ -1,0 +1,10 @@
+name	branch	head	working_tree_dirty	mib	license_files	remote	integration_status
+chowdsp-byod	main	1cf22b6ac802b9dc33cfc9f8dd6af5b3c3e40bc9	0	12.04	LICENSE	https://github.com/Chowdhury-DSP/BYOD.git	reference_only
+dexed	master	2e182b3db85c09083ab13c8b9b00565ce7d9ff85	0	32.87	LICENSE	https://github.com/asb2m10/dexed.git	reference_only
+neural-amp-modeler	main	16be869746b8915885c7a35bafdcc0061faeb50e	0	20.17	LICENSE	https://github.com/sdatkinson/NeuralAmpModelerPlugin.git	reference_only
+tauri	dev	e3bdc0345bd0acb94cf31d29cf44b30ec4ed0808	0	34.65	LICENSE-APACHE-2.0,LICENSE-MIT,LICENSE.spdx	https://github.com/tauri-apps/tauri.git	reference_only
+tauri-plugins-workspace	v2	db9c5998feff9384f9cbbefcbe0d45937c00a1fc	0	15.36	LICENSE_APACHE-2.0,LICENSE_MIT,LICENSE.spdx	https://github.com/tauri-apps/plugins-workspace.git	reference_only
+tonejs	dev	d6e555b8cb9289de0b7a4ba4f490cb81fa43d59a	0	14.04	LICENSE.md	https://github.com/Tonejs/Tone.js.git	reference_only
+tonejs-midi	master	1d3a1f539a2de55a448687285a393bc3aff7da1a	0	3.30	LICENSE.md	https://github.com/Tonejs/Midi.git	reference_only
+vst3sdk	master	3cdf9ca5d1f5b1b21e0a86832aa4abe55607bd96	0	0.71	LICENSE.txt	https://github.com/steinbergmedia/vst3sdk.git	reference_only
+wavesurfer-js	main	478dd3efc0abfc53f82d5e50bc07b6c026480b0c	0	36.07	LICENSE	https://github.com/katspaugh/wavesurfer.js.git	reference_only

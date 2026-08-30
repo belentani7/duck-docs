@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "name": "Duck Ecosystem",
+  "description": "Unified configuration for all Duck ecosystem applications",
+  "brand": {
+    "name": "DUCK",
+    "shortName": "🦆",
+    "tagline": "Ecossistema Real de Produção Musical",
+    "colors": {
+      "primary": "#4fe3b3",
+      "primaryDark": "#06281f",
+      "primaryLight": "#8fe3bd",
+      "accent": "#c9ff56",
+      "accentDark": "#0a1103",
+      "background": "#03281f",
+      "surface": "#074636",
+      "surfaceElevated": "#0c5940",
+      "border": "#0e7a56",
+      "text": "#eafff5",
+      "textMuted": "#6cc3a2",
+      "textDim": "#4a8c72",
+      "error": "#ff5d5d",
+      "warning": "#ffd166",
+      "success": "#4fe3b3"
+    },
+    "fonts": {
+      "sans": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "mono": "Consolas, 'Liberation Mono', Menlo, monospace"
+    },
+    "borderRadius": {
+      "sm": "6px",
+      "md": "12px",
+      "lg": "18px",
+      "xl": "24px",
+      "full": "999px"
+    },
+    "shadows": {
+      "sm": "0 2px 8px rgba(0,0,0,0.3)",
+      "md": "0 8px 24px rgba(0,0,0,0.4)",
+      "lg": "0 16px 48px rgba(0,0,0,0.5)",
+      "glow": "0 0 20px rgba(79,227,179,0.3)",
+      "glowStrong": "0 0 40px rgba(79,227,179,0.5)"
+    },
+    "transitions": {
+      "fast": "150ms ease",
+      "normal": "250ms ease",
+      "slow": "400ms ease"
+    }
+  },
+  "apps": [
+    {
+      "id": "duck-apps",
+      "name": "DUCK APPS",
+      "shortName": "Apps",
+      "description": "Coleção de experiências musicais web: iDuck, DUCK STATION, DUCK FL STUDIO",
+      "url": "https://belentani7.github.io/duck-apps/",
+      "repo": "https://github.com/belentani7/duck-apps",
+      "icon": "🎹",
+      "category": "tools",
+      "status": "live",
+      "features": ["Web Audio API", "MIDI Support", "Local Storage", "PWA Ready"],
+      "subApps": [
+        { "id": "iduck", "name": "iDuck", "path": "/", "icon": "🦆", "description": "Índice visual do ecossistema" },
+        { "id": "station", "name": "DUCK STATION", "path": "/station/", "icon": "🎛️", "description": "Sintetizador, pads, sequenciador, gravação WAV" },
+        { "id": "fl", "name": "DUCK FL STUDIO", "path": "/fl/", "icon": "🎚️", "description": "DAW experimental com piano roll, playlist, mixer" }
+      ]
+    },
+    {
+      "id": "duck-html",
+      "name": "DUCK HTML",
+      "shortName": "Hub",
+      "description": "Catálogo central do ecossistema Duck — páginas, apps e repositórios",
+      "url": "https://belentani7.github.io/DuckHTML/",
+      "repo": "https://github.com/belentani7/DuckHTML",
+      "icon": "🌐",
+      "category": "hub",
+      "status": "live",
+      "features": ["Static Catalog", "Shader Background", "Responsive", "Zero Dependencies"]
+    },
+    {
+      "id": "duck-omega",
+      "name": "DUCK OMEGA",
+      "shortName": "Omega",
+      "description": "Hub de produção musical completo: projetos, clientes, automações, checkout, IA",
+      "url": "https://belentani7.github.io/Duck-Omega/",
+      "repo": "https://github.com/belentani7/Duck-Omega",
+      "icon": "⚡",
+      "category": "platform",
+      "status": "building",
+      "features": ["Astro + React", "tRPC", "Drizzle ORM", "Static Export", "AI Chat", "Payment Integration"],
+      "pages": [
+        { "id": "mission", "name": "Missão", "path": "/", "icon": "🎯" },
+        { "id": "hub", "name": "Duck Hub", "path": "/hub", "icon": "🏠" },
+        { "id": "catalog", "name": "Catálogo Público", "path": "/catalog", "icon": "📦" },
+        { "id": "tools", "name": "Ferramentas", "path": "/ferramentas", "icon": "🔧" }
+      ]
+    },
+    {
+      "id": "duck-zion-apex",
+      "name": "DUCK ZION APEX",
+      "shortName": "Zion",
+      "description": "Plataforma de produção musical avançada: stems, presets, automações, métricas",
+      "url": "https://belentani7.github.io/duck-zion-apex-public/",
+      "repo": "https://github.com/belentani7/duck-zion-apex-public",
+      "icon": "🏔️",
+      "category": "platform",
+      "status": "building",
+      "features": ["Vite + React", "Production Catalog", "Quality Gates", "Metric History", "Scene/Preset Bindings"]
+    },
+    {
+      "id": "duck-deck",
+      "name": "DUCK DECK",
+      "shortName": "Deck",
+      "description": "Documentação e guias do ecossistema",
+      "url": "https://belentani7.github.io/Duck-Deck/",
+      "repo": "https://github.com/belentani7/Duck-Deck",
+      "icon": "📚",
+      "category": "docs",
+      "status": "planned",
+      "features": ["Documentation", "Guides", "API Reference"]
+    }
+  ],
+  "navigation": {
+    "primary": [
+      { "appId": "duck-html", "label": "Hub", "icon": "🌐" },
+      { "appId": "duck-apps", "label": "Apps", "icon": "🎹" },
+      { "appId": "duck-omega", "label": "Omega", "icon": "⚡" },
+      { "appId": "duck-zion-apex", "label": "Zion", "icon": "🏔️" },
+      { "appId": "duck-deck", "label": "Docs", "icon": "📚" }
+    ],
+    "utility": [
+      { "label": "GitHub Org", "url": "https://github.com/belentani7", "icon": "🐙", "external": true },
+      { "label": "Status", "url": "https://github.com/belentani7/duck-apps/actions", "icon": "📊", "external": true }
+    ]
+  },
+  "sharedData": {
+    "localStorageKeys": {
+      "userPreferences": "duck:user:prefs",
+      "recentProjects": "duck:projects:recent",
+      "sessionData": "duck:session:data",
+      "theme": "duck:ui:theme",
+      "sidebarState": "duck:ui:sidebar"
+    },
+    "defaults": {
+      "theme": "dark",
+      "language": "pt-BR",
+      "animations": true,
+      "reducedMotion": false,
+      "autoSave": true
+    }
+  },
+  "crossApp": {
+    "enableDeepLinking": true,
+    "shareSession": true,
+    "syncPreferences": true,
+    "unifiedAnalytics": false
+  },
+  "deployment": {
+    "platform": "github-pages",
+    "basePaths": {
+      "duck-apps": "/duck-apps/",
+      "duck-html": "/DuckHTML/",
+      "duck-omega": "/Duck-Omega/",
+      "duck-zion-apex": "/duck-zion-apex-public/",
+      "duck-deck": "/Duck-Deck/"
+    },
+    "buildCommands": {
+      "duck-apps": "none (static)",
+      "duck-html": "none (static)",
+      "duck-omega": "pnpm build && pnpm astro:check",
+      "duck-zion-apex": "pnpm build",
+      "duck-deck": "none (static)"
+    }
+  }
+}

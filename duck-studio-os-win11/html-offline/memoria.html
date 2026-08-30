@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DUCK Studio — Memória local</title>
+  <link rel="stylesheet" href="assets/duck.css">
+  <script defer src="assets/core.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">DK</span><span><strong>DUCK Studio</strong><small data-project-title>Sessão offline</small></span></div>
+    <nav class="main-nav" aria-label="Módulos principais"><a href="index.html">Estação</a><a href="mixer.html">Mixer</a><a href="instrumentos.html">Instrumentos</a><a href="agente.html">Agente</a><a href="recursos.html">Recursos</a><a href="memoria.html">Memória</a></nav>
+    <span class="offline-badge">INSPECTOR LOCAL</span>
+  </header>
+  <main id="conteudo">
+    <header class="page-head"><div><p class="eyebrow">Camadas separadas</p><h1>Memória</h1><p class="lede">Inspecione exatamente o que existe no navegador. A base especialista vive em JavaScript imutável e nunca é gravada no armazenamento.</p></div><div class="status-line" id="memory-page-status">Inspector pronto</div></header>
+    <section class="grid three">
+      <article class="panel stat active"><p class="eyebrow">Persistente</p><strong id="persistent-count">0</strong><span class="muted">chaves localStorage DUCK</span></article>
+      <article class="panel stat"><p class="eyebrow">Temporário</p><strong id="temporary-count">0</strong><span class="muted">duck.temp.* em ambos os storages</span></article>
+      <article class="panel stat"><p class="eyebrow">Base especialista</p><strong>ROM</strong><span class="muted">constante JS, fora do storage</span></article>
+    </section>
+    <section class="panel" style="margin-top:16px" aria-labelledby="layers-title">
+      <div class="panel-header"><div><p class="eyebrow">Leitura atual</p><h2 id="layers-title">Camadas encontradas</h2></div><button id="refresh-memory" type="button">Atualizar inspeção</button></div>
+      <div id="memory-layers" class="memory-layers"></div>
+    </section>
+    <section class="grid two" style="margin-top:16px">
+      <article class="panel"><p class="eyebrow">Exportar</p><h2>Cópia legível</h2><p>Exporta as chaves DUCK atuais e metadados de tamanho. Não inclui a base imutável.</p><button id="export-memory" type="button">Exportar snapshot JSON</button></article>
+      <article class="panel"><p class="eyebrow">Limpeza segura</p><h2>Somente temporários DUCK</h2><div class="notice safe">Esta ação remove apenas <span class="mono">duck.temp.*</span> de <span class="mono">localStorage</span> e <span class="mono">sessionStorage</span>. Projeto, mixer, pattern, preferências, memória persistente e dados de outros aplicativos ficam intactos.</div><button id="clean-temp" type="button" style="margin-top:12px">Detectar e limpar temporários DUCK</button></article>
+      <article class="panel"><p class="eyebrow">Memória do usuário</p><h2>Ação persistente separada</h2><p>Remove somente <span class="mono">duck.userMemory.v1</span>, após confirmação explícita.</p><button id="clear-user-memory" class="danger" type="button">Apagar memória persistente</button></article>
+      <article class="panel"><p class="eyebrow">Projeto</p><h2>Ação persistente separada</h2><p>Remove somente <span class="mono">duck.project.v1</span>; mixer e pattern continuam preservados.</p><button id="clear-project" class="danger" type="button">Apagar contexto do projeto</button></article>
+    </section>
+  </main>
+  <footer>Política: nenhuma limpeza ampla, nenhum coringa destrutivo e nenhuma alteração na base especialista.</footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      DuckCore.initPage('memoria');
+      var root = document.getElementById('memory-layers');
+      function render() {
+        var rows = DuckCore.storageSnapshot(); root.replaceChildren();
+        if (!rows.length) { var empty = document.createElement('p'); empty.className = 'muted'; empty.textContent = 'Nenhuma chave DUCK persistida e nenhuma sessão temporária.'; root.appendChild(empty); }
+        rows.forEach(function (row) {
+          var article = document.createElement('article'); article.className = 'memory-row';
+          var identity = document.createElement('div'); var key = document.createElement('code'); key.textContent = row.key; var scope = document.createElement('div'); scope.className = 'muted'; scope.textContent = row.scope; identity.append(key, scope);
+          var value = document.createElement('pre'); value.className = 'memory-value'; try { value.textContent = JSON.stringify(JSON.parse(row.value), null, 2); } catch (_) { value.textContent = row.value || 'vazio'; }
+          var size = document.createElement('span'); size.className = 'mono'; size.textContent = DuckCore.formatBytes(row.bytes); article.append(identity, value, size); root.appendChild(article);
+        });
+        var persistent = rows.filter(function (row) { return row.scope === 'localStorage' && row.key.indexOf(DuckCore.KEYS.tempPrefix) !== 0; }).length;
+        var temporary = rows.filter(function (row) { return row.key.indexOf(DuckCore.KEYS.tempPrefix) === 0; }).length;
+        document.getElementById('persistent-count').textContent = persistent; document.getElementById('temporary-count').textContent = temporary;
+      }
+      document.getElementById('refresh-memory').addEventListener('click', function () { render(); DuckCore.setStatus('memory-page-status', 'Inspeção atualizada.', 'ok'); });
+      document.getElementById('export-memory').addEventListener('click', function () { DuckCore.downloadJSON('duck-storage-snapshot.json', { exportedAt: new Date().toISOString(), layers: DuckCore.storageSnapshot().map(function (row) { return { scope: row.scope, key: row.key, bytes: row.bytes, value: row.value }; }) }); });
+      document.getElementById('clean-temp').addEventListener('click', function () { var before = DuckCore.storageSnapshot().filter(function (row) { return row.key.indexOf(DuckCore.KEYS.tempPrefix) === 0; }).length; if (!before) { DuckCore.setStatus('memory-page-status', 'Nenhum temporário DUCK encontrado.', 'ok'); return; } if (!window.confirm('Remover ' + before + ' item(ns) duck.temp.*? Chaves persistentes e dados de outros aplicativos serão preservados.')) return; var result = DuckCore.cleanTemporary(); render(); DuckCore.setStatus('memory-page-status', result.ok ? result.removed.length + ' temporário(s) DUCK removido(s).' : 'Falha parcial na limpeza temporária.', result.ok ? 'ok' : 'danger'); });
+      document.getElementById('clear-user-memory').addEventListener('click', function () { if (!window.confirm('Apagar somente duck.userMemory.v1? Esta ação não apaga projeto, mixer ou pattern.')) return; DuckCore.removeKey(DuckCore.KEYS.userMemory); render(); DuckCore.setStatus('memory-page-status', 'Memória persistente do usuário apagada.', 'ok'); });
+      document.getElementById('clear-project').addEventListener('click', function () { if (!window.confirm('Apagar somente duck.project.v1? Mixer, pattern e memória do usuário ficam preservados.')) return; DuckCore.removeKey(DuckCore.KEYS.project); render(); DuckCore.setStatus('memory-page-status', 'Contexto do projeto apagado.', 'ok'); }); render();
+    });
+  </script>
+</body>
+</html>

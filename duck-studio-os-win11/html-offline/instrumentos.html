@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DUCK Studio — Instrumentos e sequenciador</title>
+  <link rel="stylesheet" href="assets/duck.css">
+  <script defer src="assets/core.js"></script>
+  <script defer src="assets/audio.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">DK</span><span><strong>DUCK Studio</strong><small data-project-title>Sessão offline</small></span></div>
+    <nav class="main-nav" aria-label="Módulos principais"><a href="index.html">Estação</a><a href="mixer.html">Mixer</a><a href="instrumentos.html">Instrumentos</a><a href="agente.html">Agente</a><a href="recursos.html">Recursos</a><a href="memoria.html">Memória</a></nav>
+    <span class="offline-badge">SYNTH / 4 × 16</span>
+  </header>
+  <main id="conteudo">
+    <header class="page-head"><div><p class="eyebrow">duck.pattern.v1</p><h1>Instrumentos</h1><p class="lede">Kit procedural sintetizado em tempo real: kick, caixa, hat e baixo. Nenhum sample, arquivo externo ou rede.</p></div><div class="status-line" id="sequence-status">Sequenciador parado</div></header>
+    <section class="panel">
+      <div class="panel-header"><div><p class="eyebrow">Transporte</p><h2>Pattern A</h2></div><span class="mono" id="position">01 / 16</span></div>
+      <div class="transport"><button id="play" class="primary" type="button" aria-pressed="false">Play</button><button id="stop" type="button">Stop</button><button id="clear-pattern" class="danger" type="button">Limpar pattern</button></div>
+      <div class="form-row" style="margin-top:14px">
+        <label class="field"><span>BPM</span><input id="tempo" type="number" min="30" max="300" step="1"></label>
+        <label class="field"><span>Swing: <output id="swing-value">0%</output></span><input id="swing" type="range" min="0" max="75" step="1" value="0"></label>
+        <label class="field"><span>Forma do baixo</span><select id="waveform"><option value="triangle">Triângulo</option><option value="sine">Seno</option><option value="sawtooth">Dente de serra</option><option value="square">Quadrada</option></select></label>
+        <label class="field"><span>Nota raiz</span><select id="root-note"><option>C2</option><option>D2</option><option>E2</option><option>F2</option><option>G2</option><option selected>A2</option><option>B2</option></select></label>
+      </div>
+    </section>
+    <section class="panel" style="margin-top:16px" aria-labelledby="sequencer-title">
+      <div class="panel-header"><div><p class="eyebrow">Passos</p><h2 id="sequencer-title">Sequenciador 4 × 16</h2></div><span class="muted">Clique ou use Tab + Espaço</span></div>
+      <div style="overflow-x:auto"><div id="step-grid" class="step-grid" role="group" aria-label="Quatro pistas por dezesseis passos"></div></div>
+    </section>
+    <section class="grid two" style="margin-top:16px">
+      <article class="panel"><p class="eyebrow">Síntese</p><h2>Vozes internas</h2><p>Kick por queda senoidal. Caixa e hat por ruído filtrado. Baixo por oscilador com envelope curto e limiter master.</p></article>
+      <article class="panel"><p class="eyebrow">Atalhos</p><h2>Operação por teclado</h2><p><span class="mono">Espaço</span> alterna transporte fora de campos. <span class="mono">Escape</span> para imediatamente. Botões de passo preservam estado no navegador.</p></article>
+    </section>
+  </main>
+  <footer>Um único AudioContext é criado após Play e fechado ao sair da página.</footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      DuckCore.initPage('instrumentos');
+      var project = DuckCore.readJSON(DuckCore.KEYS.project, DuckCore.DEFAULT_PROJECT);
+      function initial() { return { schemaVersion: 1, bpm: project.bpm || 120, swing: 0, waveform: 'triangle', rootNote: 'A2', tracks: [
+        { id: 'kick', name: 'KICK', steps: [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0] },
+        { id: 'snare', name: 'CAIXA', steps: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0] },
+        { id: 'hat', name: 'HAT', steps: [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0] },
+        { id: 'bass', name: 'BAIXO', steps: [1,0,0,1,0,0,1,0,1,0,0,0,1,0,1,0] }
+      ], updatedAt: null }; }
+      var state = DuckCore.readJSON(DuckCore.KEYS.pattern, initial());
+      if (!Array.isArray(state.tracks) || state.tracks.length !== 4) state = initial();
+      var grid = document.getElementById('step-grid');
+      var stepButtons = [];
+      var timer = null; var playing = false; var currentStep = 0; var nextAt = 0;
+      document.getElementById('tempo').value = state.bpm;
+      document.getElementById('swing').value = state.swing || 0;
+      document.getElementById('swing-value').textContent = (state.swing || 0) + '%';
+      document.getElementById('waveform').value = state.waveform || 'triangle';
+      document.getElementById('root-note').value = state.rootNote || 'A2';
+      function persist() { state.updatedAt = new Date().toISOString(); DuckCore.writeJSON(DuckCore.KEYS.pattern, state); }
+      function renderGrid() {
+        grid.replaceChildren(); stepButtons = [];
+        state.tracks.forEach(function (track, trackIndex) {
+          var label = document.createElement('div'); label.className = 'step-label'; label.textContent = track.name; grid.appendChild(label);
+          stepButtons[trackIndex] = [];
+          track.steps.forEach(function (active, stepIndex) {
+            var button = document.createElement('button'); button.type = 'button'; button.className = 'step'; button.textContent = String(stepIndex + 1).padStart(2, '0'); button.setAttribute('aria-label', track.name + ', passo ' + (stepIndex + 1)); button.setAttribute('aria-pressed', String(Boolean(active)));
+            button.addEventListener('click', function () { track.steps[stepIndex] = track.steps[stepIndex] ? 0 : 1; button.setAttribute('aria-pressed', String(Boolean(track.steps[stepIndex]))); persist(); });
+            grid.appendChild(button); stepButtons[trackIndex][stepIndex] = button;
+          });
+        });
+      }
+      function intervalFor(step) { var base = 60 / DuckCore.clamp(state.bpm, 30, 300) / 4; var swing = DuckCore.clamp(state.swing, 0, 75) / 100; return step % 2 === 0 ? base * (1 + swing * 0.45) : base * (1 - swing * 0.45); }
+      function trigger(track, when, step) {
+        if (!track.steps[step]) return;
+        if (track.id === 'bass') {
+          var notes = [state.rootNote, state.rootNote, 'E2', state.rootNote, 'G2', state.rootNote, 'E2', state.rootNote, state.rootNote, 'C3', 'E2', state.rootNote, 'G2', 'E2', state.rootNote, 'B2'];
+          DuckAudio.tone({ frequency: DuckAudio.noteFrequency(notes[step]), type: state.waveform, duration: intervalFor(step) * 0.78, velocity: 0.24, when: when });
+        } else DuckAudio.drum(track.id, when, track.id === 'kick' ? 0.55 : 0.38);
+      }
+      function paint(step, delay) { window.setTimeout(function () { stepButtons.forEach(function (row) { row.forEach(function (button) { button.classList.remove('playing'); }); row[step].classList.add('playing'); }); document.getElementById('position').textContent = String(step + 1).padStart(2, '0') + ' / 16'; }, Math.max(0, delay)); }
+      function schedule() {
+        while (playing && nextAt < DuckAudio.now() + 0.12) {
+          state.tracks.forEach(function (track) { trigger(track, nextAt, currentStep); });
+          paint(currentStep, (nextAt - DuckAudio.now()) * 1000);
+          nextAt += intervalFor(currentStep); currentStep = (currentStep + 1) % 16;
+        }
+      }
+      function play() {
+        if (playing) return;
+        DuckAudio.ensure().then(function () { playing = true; currentStep = 0; nextAt = DuckAudio.now() + 0.05; timer = window.setInterval(schedule, 25); schedule(); document.getElementById('play').setAttribute('aria-pressed', 'true'); DuckCore.setStatus('sequence-status', 'Sequenciador em reprodução.', 'ok'); }).catch(function (error) { DuckCore.setStatus('sequence-status', error.message, 'danger'); });
+      }
+      function stop() { playing = false; if (timer) window.clearInterval(timer); timer = null; DuckAudio.stopAll(); stepButtons.forEach(function (row) { row.forEach(function (button) { button.classList.remove('playing'); }); }); document.getElementById('play').setAttribute('aria-pressed', 'false'); DuckCore.setStatus('sequence-status', 'Sequenciador parado.', 'warn'); }
+      ['tempo','swing','waveform','root-note'].forEach(function (id) { document.getElementById(id).addEventListener('input', function () { state.bpm = DuckCore.clamp(document.getElementById('tempo').value, 30, 300); state.swing = DuckCore.clamp(document.getElementById('swing').value, 0, 75); state.waveform = document.getElementById('waveform').value; state.rootNote = document.getElementById('root-note').value; document.getElementById('swing-value').textContent = state.swing + '%'; persist(); }); });
+      document.getElementById('play').addEventListener('click', function () { if (playing) stop(); else play(); }); document.getElementById('stop').addEventListener('click', stop);
+      document.getElementById('clear-pattern').addEventListener('click', function () { if (!window.confirm('Limpar somente os 64 passos de duck.pattern.v1?')) return; state.tracks.forEach(function (track) { track.steps = Array(16).fill(0); }); persist(); renderGrid(); stop(); });
+      document.addEventListener('keydown', function (event) { if (event.target.matches('input, select, textarea, button')) return; if (event.code === 'Space') { event.preventDefault(); if (playing) stop(); else play(); } if (event.key === 'Escape') stop(); });
+      window.addEventListener('pagehide', function () { if (timer) window.clearInterval(timer); }); renderGrid();
+    });
+  </script>
+</body>
+</html>

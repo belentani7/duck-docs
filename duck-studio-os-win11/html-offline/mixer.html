@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DUCK Studio — Mixer 16 canais</title>
+  <link rel="stylesheet" href="assets/duck.css">
+  <script defer src="assets/core.js"></script>
+  <script defer src="assets/audio.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">DK</span><span><strong>DUCK Studio</strong><small data-project-title>Sessão offline</small></span></div>
+    <nav class="main-nav" aria-label="Módulos principais"><a href="index.html">Estação</a><a href="mixer.html">Mixer</a><a href="instrumentos.html">Instrumentos</a><a href="agente.html">Agente</a><a href="recursos.html">Recursos</a><a href="memoria.html">Memória</a></nav>
+    <span class="offline-badge">16 + MASTER</span>
+  </header>
+  <main id="conteudo">
+    <header class="page-head"><div><p class="eyebrow">duck.mixer.v1</p><h1>Mixer</h1><p class="lede">Dezesseis canais com fader em dB, pan, mute, solo e master protegido. Mudanças usam rampas curtas no único grafo Web Audio.</p></div><div class="status-line" id="audio-status">Áudio aguardando gesto</div></header>
+    <section class="panel">
+      <div class="panel-header"><div><p class="eyebrow">Controles globais</p><h2>Bancada de prática</h2></div><span class="mono muted" id="save-state">não alterado</span></div>
+      <div class="transport"><button id="enable-audio" class="primary" type="button">Ativar áudio</button><button id="test-mix" type="button">Testar canais</button><button id="stop-audio" type="button">Parar áudio</button><button id="reset-mixer" class="danger" type="button">Redefinir mixer</button></div>
+      <p class="muted">Duplo clique em fader repõe 0 dB; duplo clique em pan retorna ao centro. Setas e Home/End são nativos do controle.</p>
+    </section>
+    <section aria-label="Canais do mixer" style="margin-top:16px">
+      <div class="mixer-scroll" tabindex="0" aria-label="Mixer horizontal; use Shift mais roda ou barra inferior para navegar"><div id="mixer" class="mixer"></div></div>
+    </section>
+  </main>
+  <footer>Motor de laboratório Web Audio. Compatibilidade ASIO, FL Studio e latência profissional não verificada nesta variante HTML.</footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      DuckCore.initPage('mixer');
+      function defaults() {
+        return { schemaVersion: 1, channels: Array.from({ length: 16 }, function (_, index) { return { id: index + 1, name: 'CH ' + String(index + 1).padStart(2, '0'), db: 0, pan: 0, mute: false, solo: false }; }), master: { db: -2 }, updatedAt: null };
+      }
+      var fallback = defaults();
+      var state = DuckCore.readJSON(DuckCore.KEYS.mixer, fallback);
+      if (!Array.isArray(state.channels) || state.channels.length !== 16) state = fallback;
+      var root = document.getElementById('mixer');
+      var meters = [];
+      function dbLabel(value) { return Number(value) <= -60 ? '−∞ dB' : (Number(value) > 0 ? '+' : '') + Number(value).toFixed(1) + ' dB'; }
+      function panLabel(value) { var number = Number(value); return number === 0 ? 'C' : Math.abs(number) + (number < 0 ? 'L' : 'R'); }
+      function persist() { state.updatedAt = new Date().toISOString(); DuckCore.writeJSON(DuckCore.KEYS.mixer, state); document.getElementById('save-state').textContent = 'salvo ' + new Date().toLocaleTimeString('pt-BR'); }
+      function syncAudio() { state.channels.forEach(function (channel, index) { DuckAudio.setChannel(index, channel, state.channels); }); DuckAudio.setMaster(state.master.db); }
+      function makeChannel(channel, index) {
+        var article = document.createElement('article'); article.className = 'channel'; article.dataset.channel = String(index);
+        var number = document.createElement('span'); number.className = 'channel-number'; number.textContent = String(index + 1).padStart(2, '0');
+        var title = document.createElement('h3'); title.textContent = channel.name;
+        var panRow = document.createElement('label'); panRow.className = 'pan-row';
+        var panText = document.createElement('span'); panText.textContent = 'PAN ' + panLabel(channel.pan);
+        var pan = document.createElement('input'); pan.type = 'range'; pan.min = '-100'; pan.max = '100'; pan.step = '1'; pan.value = channel.pan; pan.setAttribute('aria-label', 'Panorama do canal ' + (index + 1));
+        pan.addEventListener('input', function () { channel.pan = Number(pan.value); panText.textContent = 'PAN ' + panLabel(channel.pan); syncAudio(); persist(); });
+        pan.addEventListener('dblclick', function () { pan.value = '0'; pan.dispatchEvent(new Event('input')); }); panRow.append(panText, pan);
+        var wrap = document.createElement('div'); wrap.className = 'fader-wrap';
+        var scale = document.createElement('div'); scale.className = 'fader-scale'; scale.setAttribute('aria-hidden', 'true'); ['+6','0','−12','−24','−∞'].forEach(function (text) { var span = document.createElement('span'); span.textContent = text; scale.appendChild(span); });
+        var fader = document.createElement('input'); fader.className = 'fader'; fader.type = 'range'; fader.min = '-60'; fader.max = '6'; fader.step = '0.5'; fader.value = channel.db; fader.setAttribute('aria-label', 'Fader do canal ' + (index + 1)); fader.setAttribute('aria-valuetext', dbLabel(channel.db));
+        var meter = document.createElement('span'); meter.className = 'meter'; meter.setAttribute('aria-hidden', 'true'); var meterFill = document.createElement('i'); meter.appendChild(meterFill); meters.push(meter);
+        fader.addEventListener('input', function () { channel.db = Number(fader.value); value.textContent = dbLabel(channel.db); fader.setAttribute('aria-valuetext', dbLabel(channel.db)); syncAudio(); persist(); });
+        fader.addEventListener('dblclick', function () { fader.value = '0'; fader.dispatchEvent(new Event('input')); }); wrap.append(scale, fader, meter);
+        var value = document.createElement('output'); value.className = 'value'; value.textContent = dbLabel(channel.db);
+        var buttons = document.createElement('div'); buttons.className = 'channel-buttons';
+        var mute = document.createElement('button'); mute.type = 'button'; mute.className = 'mute'; mute.textContent = 'MUTE'; mute.setAttribute('aria-pressed', String(channel.mute)); mute.setAttribute('aria-label', 'Mute canal ' + (index + 1));
+        var solo = document.createElement('button'); solo.type = 'button'; solo.textContent = 'SOLO'; solo.setAttribute('aria-pressed', String(channel.solo)); solo.setAttribute('aria-label', 'Solo canal ' + (index + 1));
+        mute.addEventListener('click', function () { channel.mute = !channel.mute; mute.setAttribute('aria-pressed', String(channel.mute)); syncAudio(); persist(); });
+        solo.addEventListener('click', function () { channel.solo = !channel.solo; solo.setAttribute('aria-pressed', String(channel.solo)); syncAudio(); persist(); });
+        buttons.append(mute, solo); article.append(number, title, panRow, wrap, value, buttons); return article;
+      }
+      function makeMaster() {
+        var article = document.createElement('article'); article.className = 'channel master';
+        var number = document.createElement('span'); number.className = 'channel-number'; number.textContent = 'OUT';
+        var title = document.createElement('h3'); title.textContent = 'MASTER';
+        var info = document.createElement('p'); info.className = 'mono muted'; info.textContent = 'LIMIT −3';
+        var wrap = document.createElement('div'); wrap.className = 'fader-wrap';
+        var scale = document.createElement('div'); scale.className = 'fader-scale'; scale.setAttribute('aria-hidden', 'true'); ['+6','0','−12','−24','−∞'].forEach(function (text) { var span = document.createElement('span'); span.textContent = text; scale.appendChild(span); });
+        var fader = document.createElement('input'); fader.className = 'fader'; fader.type = 'range'; fader.min = '-60'; fader.max = '6'; fader.step = '0.5'; fader.value = state.master.db; fader.setAttribute('aria-label', 'Fader master');
+        var value = document.createElement('output'); value.className = 'value'; value.textContent = dbLabel(state.master.db);
+        fader.addEventListener('input', function () { state.master.db = Number(fader.value); value.textContent = dbLabel(state.master.db); DuckAudio.setMaster(state.master.db); persist(); });
+        fader.addEventListener('dblclick', function () { fader.value = '0'; fader.dispatchEvent(new Event('input')); }); wrap.append(scale, fader); article.append(number, title, info, wrap, value, document.createElement('span')); return article;
+      }
+      state.channels.forEach(function (channel, index) { root.appendChild(makeChannel(channel, index)); }); root.appendChild(makeMaster());
+      document.getElementById('enable-audio').addEventListener('click', function () { DuckAudio.ensure().then(function () { syncAudio(); DuckCore.setStatus('audio-status', 'Áudio ativo · único contexto', 'ok'); }).catch(function (error) { DuckCore.setStatus('audio-status', error.message, 'danger'); }); });
+      document.getElementById('test-mix').addEventListener('click', function () {
+        DuckAudio.ensure().then(function () {
+          syncAudio(); var start = DuckAudio.now() + 0.04;
+          state.channels.forEach(function (channel, index) { DuckAudio.tone({ frequency: 110 * Math.pow(2, (index % 12) / 12), duration: 0.13, velocity: 0.14, channel: index, when: start + index * 0.095 }); window.setTimeout(function () { meters[index].style.setProperty('--meter', '72%'); window.setTimeout(function () { meters[index].style.setProperty('--meter', '6%'); }, 130); }, index * 95); });
+          DuckCore.setStatus('audio-status', 'Teste sequencial em reprodução.', 'ok');
+        }).catch(function (error) { DuckCore.setStatus('audio-status', error.message, 'danger'); });
+      });
+      document.getElementById('stop-audio').addEventListener('click', function () { DuckAudio.stopAll(); meters.forEach(function (meter) { meter.style.setProperty('--meter', '6%'); }); DuckCore.setStatus('audio-status', 'Áudio parado.', 'warn'); });
+      document.getElementById('reset-mixer').addEventListener('click', function () { if (!window.confirm('Redefinir somente duck.mixer.v1? Projeto, padrão e memória serão preservados.')) return; state = defaults(); DuckCore.writeJSON(DuckCore.KEYS.mixer, state); window.location.reload(); });
+    });
+  </script>
+</body>
+</html>

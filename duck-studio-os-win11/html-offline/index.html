@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DUCK Studio — Estação offline</title>
+  <link rel="stylesheet" href="assets/duck.css">
+  <script defer src="assets/core.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">DK</span><span><strong>DUCK Studio</strong><small data-project-title>Sessão offline</small></span></div>
+    <nav class="main-nav" aria-label="Módulos principais"><a href="index.html">Estação</a><a href="mixer.html">Mixer</a><a href="instrumentos.html">Instrumentos</a><a href="agente.html">Agente</a><a href="recursos.html">Recursos</a><a href="memoria.html">Memória</a></nav>
+    <span class="offline-badge">LOCAL / FILE</span>
+  </header>
+  <main id="conteudo">
+    <header class="page-head">
+      <div><p class="eyebrow">Windows 11 · zero dependências</p><h1>Centro da sessão</h1><p class="lede">Contexto musical, módulos funcionais e estado local. Esta variante abre diretamente por <span class="mono">file://</span>; nenhum dado sai do computador ao iniciar.</p></div>
+      <div class="status-line" id="project-status">Projeto local pronto</div>
+    </header>
+
+    <section class="grid three" aria-label="Estado da estação">
+      <article class="panel stat active"><p class="eyebrow">Projeto</p><strong id="stat-project">Sessão offline</strong><span class="muted" id="stat-stage">rascunho</span></article>
+      <article class="panel stat"><p class="eyebrow">Tempo</p><strong><span id="stat-bpm">120</span> BPM</strong><span class="muted" id="stat-key">Am</span></article>
+      <article class="panel stat"><p class="eyebrow">Privacidade</p><strong>OFFLINE</strong><span class="muted">Persistência separada por camada</span></article>
+    </section>
+
+    <section class="panel" aria-labelledby="context-title" style="margin-top:16px">
+      <div class="panel-header"><div><p class="eyebrow">duck.project.v1</p><h2 id="context-title">Contexto da produção</h2></div><span class="mono muted">schema 1</span></div>
+      <form id="project-form">
+        <div class="form-row">
+          <label class="field"><span>Nome do projeto</span><input id="project-title" name="title" maxlength="80" required></label>
+          <label class="field"><span>BPM (30–300)</span><input id="project-bpm" name="bpm" type="number" min="30" max="300" step="1" required></label>
+          <label class="field"><span>Tonalidade</span><input id="project-key" name="key" maxlength="12" aria-describedby="key-help"></label>
+          <label class="field"><span>Etapa</span><select id="project-stage" name="stage"><option value="ideia">Ideia</option><option value="rascunho">Rascunho</option><option value="arranjo">Arranjo</option><option value="gravação">Gravação</option><option value="edição">Edição</option><option value="mix">Mix</option><option value="entrega">Entrega</option></select></label>
+        </div>
+        <small id="key-help" class="muted">Exemplos: Am, C maior, F# menor.</small>
+        <div class="actions"><button class="primary" type="submit">Salvar contexto</button><button type="button" id="export-project">Exportar projeto JSON</button></div>
+      </form>
+    </section>
+
+    <section aria-labelledby="modules-title" style="margin-top:28px">
+      <p class="eyebrow">Superfícies</p><h2 id="modules-title">Abrir módulo</h2>
+      <div class="module-links">
+        <a class="button module-link" href="mixer.html"><span><strong>Mixer</strong><small>16 canais + master</small></span></a>
+        <a class="button module-link" href="instrumentos.html"><span><strong>Instrumentos</strong><small>4 × 16 passos</small></span></a>
+        <a class="button module-link" href="agente.html"><span><strong>Agente</strong><small>Base PT-BR primeiro</small></span></a>
+        <a class="button module-link" href="recursos.html"><span><strong>Recursos</strong><small>Catálogo oficial</small></span></a>
+        <a class="button module-link" href="memoria.html"><span><strong>Memória</strong><small>Camadas sob controle</small></span></a>
+      </div>
+    </section>
+  </main>
+  <footer>DUCK Studio HTML Offline · laboratório musical, não substitui DAW/ASIO/FL Studio.</footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      DuckCore.initPage('index');
+      var project = DuckCore.readJSON(DuckCore.KEYS.project, DuckCore.DEFAULT_PROJECT);
+      var form = document.getElementById('project-form');
+      form.elements.title.value = project.title;
+      form.elements.bpm.value = project.bpm;
+      form.elements.key.value = project.key;
+      form.elements.stage.value = project.stage;
+      function render(value) {
+        document.getElementById('stat-project').textContent = value.title;
+        document.getElementById('stat-bpm').textContent = value.bpm;
+        document.getElementById('stat-key').textContent = value.key || 'sem tonalidade';
+        document.getElementById('stat-stage').textContent = value.stage;
+        document.querySelectorAll('[data-project-title]').forEach(function (node) { node.textContent = value.title; });
+      }
+      render(project);
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var saved = {
+          schemaVersion: 1,
+          title: form.elements.title.value.trim() || 'Sessão offline',
+          bpm: DuckCore.clamp(form.elements.bpm.value, 30, 300),
+          key: form.elements.key.value.trim().slice(0, 12),
+          stage: form.elements.stage.value,
+          updatedAt: new Date().toISOString()
+        };
+        if (DuckCore.writeJSON(DuckCore.KEYS.project, saved)) {
+          render(saved);
+          DuckCore.setStatus('project-status', 'Contexto salvo localmente.', 'ok');
+        }
+      });
+      document.getElementById('export-project').addEventListener('click', function () {
+        DuckCore.downloadJSON('duck-project-v1.json', DuckCore.readJSON(DuckCore.KEYS.project, DuckCore.DEFAULT_PROJECT));
+      });
+    });
+  </script>
+</body>
+</html>
