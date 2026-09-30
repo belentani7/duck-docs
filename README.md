@@ -1,18 +1,27 @@
-# DUCK DOCS — documentación y OS del Duck Studio
+# duck-docs
 
-Toda la documentación del ecosistema Duck unificada en una sola repo.
+Documentación del ecosistema Duck.
 
-## Contenido
+## Qué es
 
-| Carpeta | Qué es |
-|---|---|
-| `PROMPT-MAESTRO.md` | Prompt maestro para agentes que operan el ecosistema |
-| `AUDITORIA.md` | Auditoría de repos y escaneo de secretos (2026-08-30) |
-| `shared/` | `ecosystem.config.json` + `CREDITS.md` (mapa oficial del ecosistema) |
-| `Duck-Deck/` | Documentación del deck |
-| `duck-studio-os-win11/` | Duck Studio OS local Win11: docs, HTML offline, PROMPT-MESTRE original, scripts |
-| `duck-studio-delivery/` | Entrega del Duck Studio OS: manual PDF, docs, evidence, assets, `index.html` |
+El repositorio de referencia del universo Duck: guías, decisiones y material de entrega.
+Cuando algo del ecosistema necesita explicarse, se explica aquí.
 
-## Regla de oro
+## Estructura
 
-Nunca commitear credenciales reales aquí ni en ninguna repo. Solo `.env.example`.
+```
+Duck-Deck/           presentacion
+duck-studio-delivery/ entrega del estudio
+duck-studio-os-win11/ sistema Windows
+shared/              recursos compartidos
+AUDITORIA.md         auditoria
+PROMPT-MAESTRO.md    prompt de trabajo
+```
+
+## Cómo se usa
+
+Se lee. Los cambios se hacen cuando cambia el ecosistema, no por rutina.
+
+## Licencia
+
+Sin licencia declarada.
